@@ -7,10 +7,35 @@ import axios from "axios";
 const Home = () => {
 
   const checkoutHandler = async (amount) => {
-    // const {data} =await axios.post("http://localhost:4000/api/checkout",{
-    //   amount: amount,
-    // })
-    console.log(window);
+    const {data:{key}} = await axios.post("http://localhost:4000/api/payment/")
+    const {data:{order}} =await axios.post("http://localhost:4000/api/checkout",{
+      amount: amount,
+    });
+    sessionStorage.setItem("orderId", order.id);
+    // console.log(data);
+    const options = {
+      key,
+      amount: order.amount, 
+      currency: "INR",
+      name: "Acme Corp",
+      description: "Test Transaction",
+      image: "https://example.com/your_logo",
+      order_id: order.id, 
+      callback_url: "http://localhost:4000/api/payment",
+      prefill: { 
+          name: "Gaurav Kumar", 
+          email: "gaurav.kumar@example.com",
+          contact: "9000090000"
+      },
+      notes: {
+          address: "Razorpay Corporate Office"
+      },
+      theme: {
+          color: "#3399cc"
+      }
+  };
+  const razor = new window.Razorpay(options);
+      razor.open();
   };
 
   const products = [
